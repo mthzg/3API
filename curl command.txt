@@ -1,0 +1,16 @@
+curl -X POST "http://localhost:3000/authentification/inscription" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "email": "admin@test.com",
+           "username": "Admin",
+           "password": "admin123",
+           "role": "admin"
+         }'
+
+
+curl -X GET "http://localhost:3000/authentification/login" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "email": "admin@test.com",
+           "password": "admin123"
+         }'
