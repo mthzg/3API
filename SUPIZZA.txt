@@ -34,13 +34,18 @@ SUPIZZA/
 │  │  │    - /register   (POST)           → inscription utilisateur
 │  │  │    - /login      (GET)            → connexion
 │  │  │    - /logout     (GET)            → déconnexion
-│  │  │    - /            (GET)           → récupère les données de l'utilisateur connecté
+│  │  │    - /           (GET)            → récupère les données de l'utilisateur connecté
 │  │  │
 │  │  ├─ UserRouter.js                  (prefix : /users/)
 │  │  │    - /           (GET)           → récupérer tous les utilisateurs (admin)
 │  │  │    - /:id        (GET)           → récupérer un utilisateur par ID (admin ou utilisateur lui-même)
 │  │  │    - /:id        (PUT)           → mettre à jour un utilisateur (admin ou utilisateur lui-même)
 │  │  │    - /:id        (DELETE)        → supprimer un utilisateur (admin ou utilisateur lui-même)
+│  │  │
+│  │  ├─ my-account-router.js           (prefix : /my-account/)
+│  │  │    - /           (GET)           → récupérer les infos de son propre compte (utilisateur connecté)
+│  │  │    - /           (PUT)           → mettre à jour son propre compte (email, username, password)
+│  │  │    - /           (DELETE)        → supprimer son propre compte et détruire la session
 │  │  │
 │  │  ├─ RestaurantRouter.js            (prefix : /Restaurants/)
 │  │  │    - /           (GET)           → récupérer tous les restaurants (public)
