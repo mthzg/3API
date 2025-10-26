@@ -38,7 +38,7 @@ API usage
 ---------
 Authentication
 - Express session authentication
-  ```bash
+
 
 ├─ src/
 │  ├─ server.js
@@ -105,7 +105,7 @@ Authentication
 ├─ openapi_3API.yaml
 └─ README.md
 
-  ```
+
 
 
 Validation
