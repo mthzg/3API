@@ -104,7 +104,7 @@ Authentication
 ├─ openapi_3API.yaml
 └─ README.md
 
-```
+
 
 Validation
 ----------
