@@ -8,6 +8,8 @@ import { isCurrentUser } from "../../middlewares/authentication-middleware.js";
 const rounds = 10;
 
 const router = express.Router();
+//app.use("/authentification", authenticationRouter);
+
 
 router.post('/inscription', (request, response) => {
     bcrypt.hash(request.body.password, rounds, async (error, hash) => {

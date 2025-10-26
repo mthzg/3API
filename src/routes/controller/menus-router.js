@@ -5,7 +5,7 @@ import { isAdmin } from "../../middlewares/authentication-middleware.js";
 import { isValidID } from "../../middlewares/params-middleware.js";
 
 const router = express.Router();
-
+//app.use("/menus", menusRouter);
 router.get("/", async (req, res) => {
   const { sort, page = 1, limit = 10 } = req.query;
 

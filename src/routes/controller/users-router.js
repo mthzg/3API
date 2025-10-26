@@ -6,43 +6,60 @@ import { isAdmin, isAdminOrEmployee } from "../../middlewares/authentication-mid
 import { isValidID, userExists } from "../../middlewares/params-middleware.js";
 
 const router = express.Router();
+//app.use("/users", usersRouter);
+
 
 router.get("/", isAdmin, async (request, response) => {
   const users = await User.find();
   response.status(200).json(users);
 });
 
-router.get("/:id", isAdminOrEmployee, isValidID, userExists, async (request, response) => {
+router.get("/:id", isAdmin, isValidID, userExists, async (request, response) => {
   const user = await User.findById(request.params.id);
   response.status(200).json(user);
 });
 
-router.put("/:id", isAdmin, isValidID, userExists, async (request, response) => {
-  const id = request.params.id;
-  const user = await User.findById(id);
-  const newEmailUser = await User.findOne({ email: request.body.email});
+router.put("/:id", isAdmin, isValidID, userExists, async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { email, username, password, role } = req.body;
 
-  if (newEmailUser !== null && request.body.email !== user.email) {
-    response.status(409).json({ message: "Email déjà existant, veuillez utiliser une autre adresse !" });
-    return;
-  }
-  
-  bcrypt.hash(request.body.password, 10, async (error, hash) => {
-    if (error) response.status(500).json(error);
-    else {
-      const user = await User.findByIdAndUpdate(
-        id,
-        { ...request.body, password: hash },
-        { new: true }
-      );
-      if (!user) {
-        response.status(404).json({ message: "Utilisateur inexistant !" });
-        return;
+    const user = await User.findById(id);
+    if (!user) return res.status(404).json({ message: "Utilisateur introuvable" });
+
+    if (email && email !== user.email) {
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(409).json({ message: "Email déjà utilisé" });
       }
-      response.status(200).json({ message:`L'utilisateur ${id} a été modifié avec succès !` , user});
+      user.email = email;
     }
-  });
+
+    if (username) user.username = username;
+
+    if (role) user.role = role;
+
+    if (password) {
+      user.password = await bcrypt.hash(password, 10);
+    }
+
+    await user.save();
+
+    const userSafe = user.toObject();
+    delete userSafe.password;
+
+    res.status(200).json({
+      message: `Utilisateur ${id} mis à jour avec succès`,
+      user: userSafe
+    });
+
+  } catch (error) {
+    console.error("UPDATE ERROR:", error);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+
 });
+
 
 router.delete("/:id", isAdmin, isValidID, userExists, async (request, response) => {
   const id = request.params.id;

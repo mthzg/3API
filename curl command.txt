@@ -1,16 +1,326 @@
+#### ADMIN ####
+
+
+
+
+## /authentification ##
+
+#Register
+curl -X POST "http://localhost:3000/authentification/inscription" \
+  -H "Content-Type: application/json" \
+  -d '{
+        "email": "admin@test.com",
+        "username": "Admin",
+        "password": "admin123",
+        "role": "admin"
+      }'
+
+#Login
+curl -X GET "http://localhost:3000/authentification/login" \
+  -H "Content-Type: application/json" \
+  -d '{
+        "email": "admin@test.com",
+        "password": "admin123"
+      }' \
+  -c cookies.txt
+
+#logout
+curl -X GET "http://localhost:3000/authentification/logout" \
+  -b cookies.txt
+
+
+## /my-account ##
+
+#Get current user data
+curl -X GET "http://localhost:3000/my_account/" \
+  -b cookies.txt
+
+#update current user data
+curl -X PUT "http://localhost:3000/my_account/" \
+  -H "Content-Type: application/json" \
+  -d '{
+        "username": "new_admin"
+      }' \
+  -b cookies.txt
+
+#Delete current user
+
+curl -X DELETE "http://localhost:3000/my_account/" \
+  -b cookies.txt
+
+
+
+
+
+## /users ##
+
+#Get all users
+curl -X GET "http://localhost:3000/users" \
+  -b cookies.txt
+
+#Get one specified user
+curl -X GET "http://localhost:3000/users/68fe2d970993646d5e374f6a" \
+  -b cookies.txt
+
+#update specified user data
+curl -X PUT "http://localhost:3000/users/68fe2d970993646d5e374f6a" \
+  -H "Content-Type: application/json" \
+  -d '{"username":"new_user"}' \
+  -b cookies.txt
+
+#delete specified user
+curl -X DELETE "http://localhost:3000/users/68fe2d970993646d5e374f6a" \
+  -b cookies.txt
+
+
+
+
+## /restaurants ##
+
+#post new restaurant
+curl -X POST "http://localhost:3000/restaurants" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Burger Queen","address": "5 rue Royale","rating": 3.5}' \
+  -b cookies.txt
+
+curl -X POST "http://localhost:3000/restaurants" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Pasta Mania","address": "12 avenue des Pâtes","rating": 4.1}' \
+  -b cookies.txt
+
+curl -X POST "http://localhost:3000/restaurants" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Sushi Express","address": "3 rue du Japon","rating": 4.7}' \
+  -b cookies.txt
+
+curl -X POST "http://localhost:3000/restaurants" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Taco Loco","address": "8 boulevard du Chili","rating": 3.9}' \
+  -b cookies.txt
+
+curl -X POST "http://localhost:3000/restaurants" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Chez Mario","address": "22 rue de Naples","rating": 4.3}' \
+  -b cookies.txt
+
+curl -X POST "http://localhost:3000/restaurants" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Green Garden","address": "10 rue des Salades","rating": 4.0}' \
+  -b cookies.txt
+
+curl -X POST "http://localhost:3000/restaurants" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Le Dragon Rouge","address": "99 rue de Shanghai","rating": 3.8}' \
+  -b cookies.txt
+
+curl -X POST "http://localhost:3000/restaurants" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "BBQ House","address": "6 rue du Fumoir","rating": 4.2}' \
+  -b cookies.txt
+
+curl -X POST "http://localhost:3000/restaurants" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "La Crêpe Folle","address": "17 rue du Sarrasin","rating": 4.5}' \
+  -b cookies.txt
+
+curl -X POST "http://localhost:3000/restaurants" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Kebab Palace","address": "28 avenue du Cumin","rating": 3.7}' \
+  -b cookies.txt
+
+curl -X POST "http://localhost:3000/restaurants" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Sweet Treats","address": "12 rue du Sucre","rating": 4.6}' \
+  -b cookies.txt
+
+curl -X POST "http://localhost:3000/restaurants" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Pizza Express","address": "14 avenue des Mozzarellas","rating": 4.2}' \
+  -b cookies.txt
+
+curl -X POST "http://localhost:3000/restaurants" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Banh Mi Street","address": "5 rue de Hanoi","rating": 4.1}' \
+  -b cookies.txt
+
+curl -X POST "http://localhost:3000/restaurants" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Curry House","address": "7 rue de Bombay","rating": 4.3}' \
+  -b cookies.txt
+
+curl -X POST "http://localhost:3000/restaurants" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Falafel King","address": "9 rue du Caire","rating": 4.0}' \
+  -b cookies.txt
+
+
+#update specified restaurant
+curl -X PUT "http://localhost:3000/restaurants/68fe365dbf69e9c53136c37e" \
+  -H "Content-Type: application/json" \
+  -d '{
+        "name": "burger prince"
+      }' \
+  -b cookies.txt
+
+#delete specified restaurant
+curl -X DELETE "http://localhost:3000/restaurants/68fe3828bf69e9c53136c38a" \
+  -b cookies.txt
+
+
+
+
+## /menus ##
+
+#post new menu
+curl -X POST "http://localhost:3000/menus" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Burger Classique","price":8.5,"category":"burger","restaurant_id":"68fe365dbf69e9c53136c37e"}' \
+  -b cookies.txt
+
+curl -X POST "http://localhost:3000/menus" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Burger Cheese","price":9.5,"category":"burger","restaurant_id":"68fe365dbf69e9c53136c37e"}' \
+  -b cookies.txt
+
+curl -X POST "http://localhost:3000/menus" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Burger Bacon","price":10.5,"category":"burger","restaurant_id":"68fe365dbf69e9c53136c37e"}' \
+  -b cookies.txt
+
+curl -X POST "http://localhost:3000/menus" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Burger Veggie","price":9.0,"category":"burger","restaurant_id":"68fe365dbf69e9c53136c37e"}' \
+  -b cookies.txt
+
+curl -X POST "http://localhost:3000/menus" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Frites Maison","price":3.0,"category":"side","restaurant_id":"68fe365dbf69e9c53136c37e"}' \
+  -b cookies.txt
+
+curl -X POST "http://localhost:3000/menus" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Nuggets 6pcs","price":4.5,"category":"side","restaurant_id":"68fe365dbf69e9c53136c37e"}' \
+  -b cookies.txt
+
+curl -X POST "http://localhost:3000/menus" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Coca Cola 33cl","price":2.5,"category":"drink","restaurant_id":"68fe365dbf69e9c53136c37e"}' \
+  -b cookies.txt
+
+curl -X POST "http://localhost:3000/menus" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Sprite 33cl","price":2.5,"category":"drink","restaurant_id":"68fe365dbf69e9c53136c37e"}' \
+  -b cookies.txt
+
+curl -X POST "http://localhost:3000/menus" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Dessert Choco","price":3.5,"category":"dessert","restaurant_id":"68fe365dbf69e9c53136c37e"}' \
+  -b cookies.txt
+
+curl -X POST "http://localhost:3000/menus" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Dessert Vanille","price":3.5,"category":"dessert","restaurant_id":"68fe365dbf69e9c53136c37e"}' \
+  -b cookies.txt
+
+#update specified menu
+curl -X PUT "http://localhost:3000/menus/68fe3b0abf69e9c53136c3b1" \
+  -H "Content-Type: application/json" \
+  -d '{
+        "name": "Burger Deluxe",
+        "price": 2
+      }' \
+  -b cookies.txt
+
+#delete specified menu
+curl -i -X DELETE "http://localhost:3000/menus/68fe3b0bbf69e9c53136c3b3" \
+  -b cookies.txt
+
+
+
+
+#### USER ####
+
+
+
+
+## /authentification ##
+
+#Register
 curl -X POST "http://localhost:3000/authentification/inscription" \
      -H "Content-Type: application/json" \
      -d '{
-           "email": "admin@test.com",
-           "username": "Admin",
-           "password": "admin123",
-           "role": "admin"
+           "email": "user@test.com",
+           "username": "user",
+           "password": "user123"
          }'
 
-
+#Login
 curl -X GET "http://localhost:3000/authentification/login" \
      -H "Content-Type: application/json" \
      -d '{
-           "email": "admin@test.com",
-           "password": "admin123"
+           "email": "user@test.com",
+           "password": "user123"
          }'
+
+#logout
+curl -X GET "http://localhost:3000/authentification/logout" \
+  -b cookies.txt
+
+
+
+
+## /my-account ##
+
+#Get current user data
+curl -X GET "http://localhost:3000/my_account/" \
+  -b cookies.txt
+
+#update current user data
+curl -X PUT "http://localhost:3000/my_account/" \
+  -H "Content-Type: application/json" \
+  -d '{
+        "username": "new_admin"
+      }' \
+  -b cookies.txt
+
+#Delete current user
+curl -X DELETE "http://localhost:3000/my_account/" \
+  -b cookies.txt
+
+
+
+
+
+#### PUBLIC ####
+
+
+## /restaurants ##
+
+#get all restaurants
+#default filters limit = 10
+curl -X GET "http://localhost:3000/restaurants"
+#sort by name
+curl -X GET "http://localhost:3000/restaurants?sort=name"
+#pagination + limit
+curl -X GET "http://localhost:3000/restaurants?page=2&limit=5"
+
+#get specified restaurant data
+curl -X GET "http://localhost:3000/restaurants/68fe365dbf69e9c53136c37e"
+
+
+
+
+## /menus ##
+
+#get all menus
+#default filters limit = 10
+curl -X GET "http://localhost:3000/menus"
+#sort by name
+curl -X GET "http://localhost:3000/menus?sort=price"
+#pagination + limit
+curl -X GET "http://localhost:3000/menus?page=2&limit=5"
+
+#get specified menu data
+curl -X GET "http://localhost:3000/menus/68fe3b0abf69e9c53136c3b1"
+
+

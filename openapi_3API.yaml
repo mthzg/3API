@@ -1,0 +1,722 @@
+openapi: "3.0.3"
+info:
+  title: "3API"
+  version: "1.0.0"
+  description: |
+    Spécification OpenAPI basée sur le code fourni du dépôt mthzg/3API.
+    - Authentification par session (cookie).
+    - Endpoints découverts : /authentification, /my-account, /menus, /restaurants.
+servers:
+  - url: "http://localhost:3000"
+    description: "Serveur local (développement)"
+
+components:
+  securitySchemes:
+    CookieAuth:
+      type: apiKey
+      in: cookie
+      name: connect.sid
+      description: "Session cookie géré par express-session (ex: connect.sid)."
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Une erreur est survenue."
+        error:
+          type: object
+          nullable: true
+
+    ValidationError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Validation failed"
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+
+    UserPublic:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "64a1f2e9b1a2c3d4e5f67890"
+        email:
+          type: string
+          format: email
+          example: "user@example.com"
+        username:
+          type: string
+          example: "MonUtilisateur"
+        role:
+          type: string
+          example: "admin"
+      required:
+        - _id
+        - email
+        - username
+
+    UserCreate:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+        password:
+          type: string
+        role:
+          type: string
+          description: "ex: admin, employee, user"
+      required:
+        - email
+        - username
+        - password
+
+    Menu:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "64a1f2e9b1a2c3d4e5f67891"
+        restaurant_id:
+          type: string
+          example: "64a1f2e9b1a2c3d4e5f67892"
+        name:
+          type: string
+          example: "Menu du jour"
+        description:
+          type: string
+          example: "Entrée + Plat + Dessert"
+        price:
+          type: number
+          example: 12.5
+        category:
+          type: string
+          example: "Déjeuner"
+
+    Restaurant:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "64a1f2e9b1a2c3d4e5f67893"
+        name:
+          type: string
+          example: "Le Bistrot"
+        address:
+          type: string
+          example: "12 rue de la Gare"
+        phone:
+          type: string
+          example: "+33123456789"
+        opening_hours:
+          type: string
+          example: "09:00-18:00"
+
+    PaginatedMenus:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Menu"
+        meta:
+          type: object
+          properties:
+            page:
+              type: integer
+              example: 1
+            per_page:
+              type: integer
+              example: 10
+            total:
+              type: integer
+              example: 42
+
+    PaginatedRestaurants:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Restaurant"
+        meta:
+          type: object
+          properties:
+            page:
+              type: integer
+              example: 1
+            per_page:
+              type: integer
+              example: 10
+            total:
+              type: integer
+              example: 5
+
+  responses:
+    BadRequest:
+      description: "Requête invalide"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Unauthorized:
+      description: "Non autorisé"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFound:
+      description: "Ressource non trouvée"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Conflict:
+      description: "Conflit (ex: ressource déjà existante)"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    InternalError:
+      description: "Erreur interne du serveur"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+paths:
+  /authentification/inscription:
+    post:
+      summary: "Créer un nouvel utilisateur (inscription)"
+      tags: ["authentification"]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserCreate"
+            example:
+              email: "admin@test.com"
+              username: "Admin"
+              password: "admin123"
+              role: "admin"
+      responses:
+        "200":
+          description: "Compte créé avec succès (code dans le dépôt : 200)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Bienvenue Admin, ton compte a été créé avec succès. Tu peux te connecter !"
+                  id:
+                    type: string
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /authentification/login:
+    post:
+      summary: "Connexion (login) — échange des identifiants"
+      tags: ["authentification"]
+      description: >
+        Recommandation : utiliser POST pour le login.
+        Note : dans le code actuel l'endpoint est défini en GET mais il lit request.body. Il est préférable de modifier le serveur pour utiliser POST.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+              required:
+                - email
+                - password
+            example:
+              email: "admin@test.com"
+              password: "admin123"
+      responses:
+        "200":
+          description: "Connexion réussie (session créée)"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Salut Admin, tu as été connecté avec succès !"
+        "404":
+          description: "Utilisateur introuvable"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Pas d'utilisateur avec cet email"
+        "403":
+          description: "Mot de passe incorrect"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Le mot de passe est incorrect !"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /authentification/logout:
+    get:
+      summary: "Déconnexion (logout) - détruit la session"
+      tags: ["authentification"]
+      security:
+        - CookieAuth: []
+      responses:
+        "200":
+          description: "Déconnecté avec succès"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Vous avez été déconnecté avec succcès !"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /my-account:
+    get:
+      summary: "Récupérer les informations du compte courant"
+      tags: ["my-account"]
+      security:
+        - CookieAuth: []
+      responses:
+        "200":
+          description: "Utilisateur courant (sans mot de passe)"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserPublic"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+    put:
+      summary: "Mettre à jour le compte courant"
+      tags: ["my-account"]
+      security:
+        - CookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                username:
+                  type: string
+                password:
+                  type: string
+            example:
+              email: "newemail@test.com"
+              username: "NewUsername"
+      responses:
+        "200":
+          description: "Compte mis à jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Compte mis à jour avec succès."
+                  user:
+                    $ref: "#/components/schemas/UserPublic"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+    delete:
+      summary: "Supprimer le compte courant"
+      tags: ["my-account"]
+      security:
+        - CookieAuth: []
+      responses:
+        "200":
+          description: "Compte supprimé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Compte supprimé avec succès."
+                  user:
+                    type: object
+                    properties:
+                      email:
+                        type: string
+                      username:
+                        type: string
+                      role:
+                        type: string
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /menus:
+    get:
+      summary: "Lister les menus (pagination + tri)"
+      tags: ["menus"]
+      parameters:
+        - name: sort
+          in: query
+          description: "Trier par 'price' ou 'category'"
+          schema:
+            type: string
+            enum: [price, category]
+        - name: page
+          in: query
+          description: "Numéro de page (défaut 1)"
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: "Nombre d'éléments par page (défaut 10)"
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: "Liste paginée de menus"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedMenus"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+    post:
+      summary: "Créer un menu (admin uniquement)"
+      tags: ["menus"]
+      security:
+        - CookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Menu"
+            example:
+              restaurant_id: "64a1f2e9b1a2c3d4e5f67892"
+              name: "Formule Midi"
+              description: "Entrée + Plat"
+              price: 11.5
+              category: "Déjeuner"
+      responses:
+        "201":
+          description: "Menu créé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Menu créé avec succès"
+                  menu:
+                    $ref: "#/components/schemas/Menu"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /menus/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: "Identifiant MongoDB de l'objet (ObjectId)"
+        schema:
+          type: string
+          example: "64a1f2e9b1a2c3d4e5f67891"
+
+    get:
+      summary: "Récupérer un menu par ID"
+      tags: ["menus"]
+      responses:
+        "200":
+          description: "Menu trouvé"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Menu"
+        "400":
+          description: "Format d'ID invalide"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                invalidId:
+                  value:
+                    message: "Le format de l'ID n'est pas valide !"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    put:
+      summary: "Mettre à jour un menu (admin)"
+      tags: ["menus"]
+      security:
+        - CookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Menu"
+      responses:
+        "200":
+          description: "Menu mis à jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Menu mis à jour"
+                  menu:
+                    $ref: "#/components/schemas/Menu"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+    delete:
+      summary: "Supprimer un menu (admin)"
+      tags: ["menus"]
+      security:
+        - CookieAuth: []
+      responses:
+        "200":
+          description: "Menu supprimé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Menu supprimé"
+                  menu:
+                    $ref: "#/components/schemas/Menu"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /restaurants:
+    get:
+      summary: "Lister les restaurants (pagination + tri)"
+      tags: ["restaurants"]
+      parameters:
+        - name: sort
+          in: query
+          description: "Trier par 'name' ou 'address'"
+          schema:
+            type: string
+            enum: [name, address]
+        - name: page
+          in: query
+          description: "Numéro de page (défaut 1)"
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          description: "Nombre d'éléments par page (défaut 10)"
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: "Liste paginée de restaurants"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedRestaurants"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+    post:
+      summary: "Créer un restaurant (admin uniquement)"
+      tags: ["restaurants"]
+      security:
+        - CookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Restaurant"
+            example:
+              name: "Le Bistrot"
+              address: "12 rue de la Gare"
+              phone: "+33123456789"
+              opening_hours: "09:00-18:00"
+      responses:
+        "201":
+          description: "Restaurant créé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Restaurant créé avec succès"
+                  restaurant:
+                    $ref: "#/components/schemas/Restaurant"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+  /restaurants/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: "Identifiant MongoDB de l'objet (ObjectId)"
+        schema:
+          type: string
+          example: "64a1f2e9b1a2c3d4e5f67893"
+
+    get:
+      summary: "Récupérer un restaurant par ID"
+      tags: ["restaurants"]
+      responses:
+        "200":
+          description: "Restaurant trouvé"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Restaurant"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+    put:
+      summary: "Mettre à jour un restaurant (admin)"
+      tags: ["restaurants"]
+      security:
+        - CookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Restaurant"
+      responses:
+        "200":
+          description: "Restaurant mis à jour"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Restaurant mis à jour"
+                  restaurant:
+                    $ref: "#/components/schemas/Restaurant"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+
+    delete:
+      summary: "Supprimer un restaurant (admin)"
+      tags: ["restaurants"]
+      security:
+        - CookieAuth: []
+      responses:
+        "200":
+          description: "Restaurant supprimé"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Restaurant supprimé"
+                  restaurant:
+                    $ref: "#/components/schemas/Restaurant"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+tags:
+  - name: "authentification"
+    description: "Inscription, connexion, déconnexion"
+  - name: "my-account"
+    description: "Opérations sur le compte courant (nécessite session)"
+  - name: "menus"
+    description: "CRUD sur les menus (création/modification/suppression réservées aux admins)"
+  - name: "restaurants"
+    description: "CRUD sur les restaurants (création/modification/suppression réservées aux admins)"

@@ -7,6 +7,8 @@ import { isCurrentUser } from "../../middlewares/authentication-middleware.js";
 const router = express.Router();
 const rounds = 10;
 
+//app.use("/my_account", myAccountRouter);
+
 router.get("/", isCurrentUser, async (req, res) => {
   try {
     const user = await User.findById(req.session.userID).select("-password");
