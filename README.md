@@ -13,7 +13,10 @@ Main endpoints
 - /menus
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 1a3e787ef731337537ea4dcf9fbcb7b2747b2d44
 Required features implemented
 -----------------------------
 Users endpoint (/users)
@@ -40,6 +43,9 @@ Menus endpoint (/menus)
 - Public read access with sorting options (price, category)
 - Pagination with default limit 10 (adjustable via query params)
 
+<<<<<<< HEAD
+>>>>>>> 1a3e787ef731337537ea4dcf9fbcb7b2747b2d44
+=======
 >>>>>>> 1a3e787ef731337537ea4dcf9fbcb7b2747b2d44
 Prerequisites
 -------------
@@ -50,9 +56,12 @@ Prerequisites
 Installation
 ------------
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 1. Install dependencies:
 =======
+=======
+>>>>>>> 1a3e787ef731337537ea4dcf9fbcb7b2747b2d44
 1. Clone the repository:
    ```bash
    git clone https://github.com/<owner>/<repo>.git
@@ -60,13 +69,19 @@ Installation
    ```
 
 2. Install dependencies:
+<<<<<<< HEAD
+>>>>>>> 1a3e787ef731337537ea4dcf9fbcb7b2747b2d44
+=======
 >>>>>>> 1a3e787ef731337537ea4dcf9fbcb7b2747b2d44
    ```bash
    npm install
    ```
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> 1a3e787ef731337537ea4dcf9fbcb7b2747b2d44
 Configuration
 -------------
 Create a `.env` file in the project root (or set environment variables) with at least the following variables:
@@ -80,6 +95,9 @@ JWT_SECRET=your_jwt_secret_here
 - PORT : port d'écoute (ex: 3000)
 - MONGODB_URI : URI MongoDB
 - JWT_SECRET : secret pour signer les JWT
+<<<<<<< HEAD
+>>>>>>> 1a3e787ef731337537ea4dcf9fbcb7b2747b2d44
+=======
 >>>>>>> 1a3e787ef731337537ea4dcf9fbcb7b2747b2d44
 
 Start the server
@@ -87,8 +105,14 @@ Start the server
 - Development:
   ```bash
 <<<<<<< HEAD
+<<<<<<< HEAD
   npm run start
   ```
+=======
+  npm start
+  ```
+  (ou `node src/index.js` selon l'organisation du projet)
+>>>>>>> 1a3e787ef731337537ea4dcf9fbcb7b2747b2d44
 =======
   npm start
   ```
@@ -98,6 +122,7 @@ Start the server
 API usage
 ---------
 Authentication
+<<<<<<< HEAD
 <<<<<<< HEAD
 - Express session authentication
 
@@ -167,6 +192,8 @@ Authentication
 └─ README.md
 
 =======
+=======
+>>>>>>> 1a3e787ef731337537ea4dcf9fbcb7b2747b2d44
 - JWT-based authentication.
 - For endpoints requiring authentication, include header:
   Authorization: Bearer <token>
@@ -274,13 +301,20 @@ curl -X POST "http://localhost:3000/restaurants" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer <token>" \
   -d '{"name":"Le Bistrot","address":"12 rue de la Gare","phone":"+33123456789","opening_hours":"09:00-18:00"}'
+<<<<<<< HEAD
+>>>>>>> 1a3e787ef731337537ea4dcf9fbcb7b2747b2d44
+=======
 >>>>>>> 1a3e787ef731337537ea4dcf9fbcb7b2747b2d44
 ```
 
 Validation
 ----------
 <<<<<<< HEAD
+<<<<<<< HEAD
 Input validation is applied to route payloads (users, restaurants, menus). Validation is performed through middleware
+=======
+Input validation is applied to route payloads (users, restaurants, menus). Validation is performed through middleware in the codebase.
+>>>>>>> 1a3e787ef731337537ea4dcf9fbcb7b2747b2d44
 =======
 Input validation is applied to route payloads (users, restaurants, menus). Validation is performed through middleware in the codebase.
 >>>>>>> 1a3e787ef731337537ea4dcf9fbcb7b2747b2d44
@@ -299,10 +333,13 @@ Documentation (Swagger/OpenAPI)
 Testing
 -------
 <<<<<<< HEAD
+<<<<<<< HEAD
 - CURL commands included in "curl command.txt"
 
 
 =======
+=======
+>>>>>>> 1a3e787ef731337537ea4dcf9fbcb7b2747b2d44
 - Tests are provided using a testing framework (Jest or Mocha/Chai).
 - Run tests with:
   ```bash
@@ -319,6 +356,9 @@ The archive submitted must contain:
 Important
 ---------
 - The project must be runnable. Ensure environment variables are set and MongoDB is accessible before starting the server.
+<<<<<<< HEAD
+>>>>>>> 1a3e787ef731337537ea4dcf9fbcb7b2747b2d44
+=======
 >>>>>>> 1a3e787ef731337537ea4dcf9fbcb7b2747b2d44
 
 
